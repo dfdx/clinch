@@ -1,6 +1,5 @@
-#pom.xml
-#*jar
+pom.xml
+*jar
 lib
 classes
 *~
-#.gitignore
