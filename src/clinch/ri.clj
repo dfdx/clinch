@@ -39,11 +39,11 @@
 
 (defn- add-vec! [vbox w v]
   (swap! (:word-vectors vbox) assoc w (vec/plus (word-vector vbox w) v))
-  true)
+  nil)
 
 (defn- sub-vec! [vbox w v]
   (swap! (:word-vectors vbox) assoc w (vec/minus (word-vector vbox w) v))
-  true)
+  nil)
 
 
 (defn- find-new-docs [vbox]
@@ -86,7 +86,7 @@
     (let [d-vec (doc-init-vector vbox d)]
       (doseq [w (clucy/document-words (:index vbox) d)]
 	(add-vec! vbox w d-vec))))
-  true)
+  nil)
 
 (defn update! [vbox]
   (update-words! vbox (update-docs! vbox)))
