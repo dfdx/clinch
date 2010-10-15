@@ -1,8 +1,32 @@
 
-(ns clinch.test.buckets
+(ns clinch.test.all
   (:use [clinch buckets ri vectors] :reload-all)
   (:use [clojure.test])
   (:require [clucy.core :as clucy]))
+
+
+(deftest update-words 
+  (let [idx (clucy/memory-index)]
+    (clucy/add
+     idx
+     {:content "one nine"}
+     {:content "one two"}
+     {:content "one two one"})
+    (let [vbox (make-vector-box idx)]
+      (update! vbox)
+      (is (= (wcontext-vector vbox "one")
+	     (reduce plus [(doc-init-vector vbox 0)
+			   (doc-init-vector vbox 1)
+			   (doc-init-vector vbox 2)
+			   (doc-init-vector vbox 2)]))
+	  "Error in update! function")
+      (clucy/add idx {:content "just nine"})
+      (update! vbox)
+      (is (= (wcontext-vector vbox "nine")
+	     (plus (doc-init-vector vbox 0) (doc-init-vector vbox 3)))))))
+      
+
+
 
 
 (deftest buckets-hierarchy
@@ -29,11 +53,10 @@
 		     (plus start-music-vector
 			   (plus @(:own-vector nirvana)
 				 @(:own-vector radiohead)))))
-	    "Error in add-child! function")
+	    "Error in add-child! function. ")
 	(remove-child! music nirvana)
 	(is (= @(:own-vector art)
 	       (plus start-art-vector
 		     (plus start-music-vector
-			   (plus @(:own-vector nirvana)
-				 @(:own-vector radiohead)))))
-	    "Error is remove-child! function")))))
+			   @(:own-vector radiohead))))
+	    "Error in remove-child! function. ")))))

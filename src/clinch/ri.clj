@@ -18,18 +18,32 @@
 
    (make-vector-box idx :dim 10000 :seed 5)"
   [index :dim 5000 :seed 10]
-  (struct-map vector-box
-    :index index
-    :doc-init-vectors (atom {})
-    :word-vectors (atom {})
-    :dim dim 
-    :seed seed))
+  (with-meta
+    (struct-map vector-box
+      :index index
+      :doc-init-vectors (atom {})
+      :word-vectors (atom {})
+      :dim dim 
+      :seed seed)
+    {:type ::vector-box}))
+
+;; (defmethod clojure.core/print-method ::vector-box [vbox w]
+;; 	   (println "box!"))
 
 (defn word-vector [vbox word]
   (@(:word-vectors vbox) word))
 
 (defn doc-init-vector [vbox n]
   (@(:doc-init-vectors vbox) n))
+
+
+(defn- add-vec! [vbox w v]
+  (swap! (:word-vectors vbox) assoc w (vec/plus (word-vector vbox w) v))
+  true)
+
+(defn- sub-vec! [vbox w v]
+  (swap! (:word-vectors vbox) assoc w (vec/minus (word-vector vbox w) v))
+  true)
 
 
 (defn- find-new-docs [vbox]
@@ -42,6 +56,9 @@
 	current-words (keys @(:word-vectors vbox))]
     (seq (apply disj (set all-words) current-words))))
 
+;;(defn find-words-to-update [vbox]
+;;  (flatten (map (analyze ) )))
+
 
 (declare
  calculate-context-vector
@@ -50,21 +67,29 @@
 
 
 (defn- update-docs! [vbox]
-  (let [new-vectors (reduce
+  (let [new-docs (find-new-docs vbox)
+	new-vectors (reduce
 		     rconj (map (fn [n] {n (vec/make-random-vector
 					   (:dim vbox) (:seed vbox))})
-			       (find-new-docs vbox)))]
-    (swap! (:doc-init-vectors vbox) conj new-vectors)))
+			       new-docs))]
+    (swap! (:doc-init-vectors vbox) conj new-vectors)
+    new-docs))
 
-(defn- update-words! [vbox]
-  (let [new-vectors (reduce
-		     rconj (map (fn [w] {w (calculate-context-vector vbox w)})
-				(find-new-words vbox)))]
-    (swap! (:word-vectors vbox) conj new-vectors)))
+;; (defn- update-words! [vbox]
+;;   (let [new-vectors (reduce
+;; 		     rconj (map (fn [w] {w (calculate-context-vector vbox w)})
+;; 				(find-new-words vbox)))]
+;;     (swap! (:word-vectors vbox) conj new-vectors)))
+
+(defn- update-words! [vbox new-docs]
+  (doseq [d new-docs]
+    (let [d-vec (doc-init-vector vbox d)]
+      (doseq [w (clucy/document-words (:index vbox) d)]
+	(add-vec! vbox w d-vec))))
+  true)
 
 (defn update! [vbox]
-  (update-docs! vbox)
-  (update-words! vbox))
+  (update-words! vbox (update-docs! vbox)))
 
 (defn reset-vectors! [vbox]
   (let [doc-map (reduce
@@ -107,39 +132,3 @@
   (def idx (clucy/disk-index "/home/asi/index"))
   (def vbox (make-vector-box idx :dim 5000 :seed 5))
   (update! vbox))
-
-;; (defn vector-map [index]
-;;   (let [docs (ref {})
-;; 	words (ref {})]
-;;     (letfn
-;; 	[(get-vector [num] (@docs num))
-;; 	 (get-word-vector [w] (@words w))
-;; 	 (inner-word-context-vector
-;; 	  [word] (let [doc-freq-pairs (freq-in-docs index word)]
-;; 	       (reduce add (map #(mult-const (get-vector (first %)) 
-;; 					     (second %)) 
-;; 				doc-freq-pairs))))
-;; 	 (update-words
-;; 	  [] (dosync
-;; 	      (ref-set words {})
-;; 	      (doseq [word (all-words index)]
-;; 		(alter words conj
-;; 		       { word (inner-word-context-vector word) }))))
-;; 	 (add-new-docs
-;; 	  [] (dosync
-;; 	      (doseq [num (all-doc-nums index)]
-;; 		(when (nil? (docs num))
-;; 		  (alter
-;; 		   docs conj
-;; 		   { num (make-random-vector VECTOR_DIM VECTOR_SEED) })
-;; 		  (update-words)))))
-;; 	 (dispatch
-;; 	  [msg & args]
-;; 	  (cond (= msg 'docs) @docs
-;; 		(= msg 'words) @words
-;; 		(= msg 'update-words) (update-words)
-;; 		(= msg 'add-new-docs) (add-new-docs)
-;; 		(= msg 'get-vector) (get-vector (first args))
-;; 		(= msg 'get-word-vector) (get-word-vector (first args))
-;; 		true (throw (Exception. "vector-map: Unknown message"))))]
-;;       dispatch)))
