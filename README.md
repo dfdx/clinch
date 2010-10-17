@@ -1,7 +1,8 @@
 
 Clinch
+======
 
-## Usage
+# Usage
 
 FIXME: write
 
@@ -9,7 +10,9 @@ FIXME: write
 
 FIXME: write
 
-## License
+### License
+
+#### Lis2
 
 Copyright (C) 2010 FIXME
 
