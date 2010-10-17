@@ -103,6 +103,7 @@
       (reset! (:word-vectors vbox) word-map))))
 
 
+
 (defn calculate-context-vector
   "Calculates context vector for a given word by summation of vectors of
    documents the word occured in. Takes O(n) time. Low-level procedure,
@@ -128,7 +129,20 @@
 
 
 
-(defn init-test []
-  (def idx (clucy/disk-index "/home/asi/index"))
-  (def vbox (make-vector-box idx :dim 5000 :seed 5))
-  (update! vbox))
+;; (defn collect-parents [buck depth]
+;;   (cond
+;;    (empty? (buck 'parents)) #{}
+;;    (> depth 0) 
+;;    (into (buck 'parents)
+;; 	 (reduce-into (map #(collect-parents % (- depth 1)) (buck 'parents))))
+;;    true #{}))
+
+
+(defn collect-parents [buck depth]
+  (cond
+   (empty? @(:parents buck)) #{}
+   (> depth 0) 
+   (into @(:parents buck)
+	 (reduce rinto (map #(collect-parents % (- depth 1))
+			    @(:parents buck))))
+   true #{}))
