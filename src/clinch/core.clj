@@ -21,10 +21,9 @@
        (buckets/make-bucket vbox name new-text :analyzer analyzer))))
 
 
-(defnk make-index [:path nil]
-  (if (empty? path)
-    (clucy/memory-index)
-    (clucy/disk-index path)))
+(defn make-index
+  ([path] (clucy/disk-index path))
+  ([] (clucy/memory-index)))
 
 ;; (defn add-document [index & maps]
 ;;   (apply #(clucy/add index %) maps))

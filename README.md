@@ -23,15 +23,8 @@ After you get the code, you will need to pull all dependencies. Clinch is using 
 Currently there's one dependency which is not included into Leiningen project summary. This is [modified Clucy](http://github.com/faithlessfriend/clucy) library. Download it, cd to the Clucy dir and execute `lein jar` to get clucy.jar. Then just copy this new file to clinch/lib.
 
 
-#### Basic Usage
+#### Example of Usage
 
-1. Create Clucy index:
-    
-    (require '(clucy [core :as clucy]))
-    (def index (clucy/memory-index))
-    # (def index (clucy/disk-index "/path/to/the/new/or/existing/index"))
-    
-Under the 
 
 Copyright (c) Andrei Zhabinski 
 Distributed under the [MIT Licence](http://www.opensource.org/licenses/mit-license.php).
