@@ -25,6 +25,7 @@ Currently there's one dependency which is not included into Leiningen project su
 
 #### Example of Usage
 
+For example of usage see [spamfilter](https://github.com/faithlessfriend/clinch/blob/master/src/clinch/spamfilter.clj)
 
 Copyright (c) Andrei Zhabinski 
 Distributed under the [MIT Licence](http://www.opensource.org/licenses/mit-license.php).
