@@ -49,11 +49,15 @@
 
 (defn find-best [root vbox text]
   (let [results (classify root vbox text 0)]
-    (get-buck (reduce #(if (>= (get-rate %1) (get-rate %2)) %1 %2) results))))
+    (reduce #(if (>= (get-rate %1) (get-rate %2)) %1 %2) results)))
+
+;; (defn find-best-in-row [row vbox text]
+;;   (let [results (classify-flat row vbox text 0)]
+;;     (get-buck (reduce #(if (>= (get-rate %1) (get-rate %2)) %1 %2) results))))
 
 (defn find-best-in-row [row vbox text]
   (let [results (classify-flat row vbox text 0)]
-    (get-buck (reduce #(if (>= (get-rate %1) (get-rate %2)) %1 %2) results))))
+    (reduce #(if (>= (get-rate %1) (get-rate %2)) %1 %2) results)))
 
 
 ;; filters

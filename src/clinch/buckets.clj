@@ -1,26 +1,28 @@
 
 (ns clinch.buckets
+  (:require [clucy.core :as clucy])
   (:use [clojure.contrib def]
 	[clinch ri utils]
 	[clinch.vectors :as vec]))
 
 (defstruct
     #^{:doc "Bucket to classify text to. "}
-  bucket :name :text :store-text :own-vector :parents :children)
+  bucket :name :text :store-text :own-vector :parents :children :analyzer)
 
 (defnk make-bucket
   "Creates classification bucket. If :store-text is true, will also store
    indexed text. You can create bucket hierarchies by using (add-child)
    procedure. "
-  [vbox name text :store-text true]
+  [vbox name text :store-text true :analyzer clucy/*analyzer*]
   (with-meta
     (struct-map bucket
       :name name
       :text (if store-text text nil)
       :store-text store-text
-      :own-vector (atom (context-vector vbox text))
+      :own-vector (atom (context-vector vbox text analyzer))
       :parents (atom #{})
-      :children (atom #{}))
+      :children (atom #{})
+      :analyzer analyzer)
     {:type ::bucket}))
   
 ;; wrappers to not mess with atoms by hand

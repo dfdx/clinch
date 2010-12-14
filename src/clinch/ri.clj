@@ -122,10 +122,13 @@
 
 (defn context-vector
   "Produces text's context vector by traversing all words and summation
-   their vectors, if any. Takes O(W), where W - number of words in text. "
-  [vbox text]
-  (let [words (clucy/analyze text)]
-    (reduce vec/plus (map #(wcontext-vector vbox %) words))))
+   their vectors, if any. Analyzer specifies language. If no analyzer is
+   supplied, language detection is used. Takes O(W) time, where W -
+   number of words in text. "
+  ([vbox text] (context-vector vbox text (clucy/auto-analyzer text)))
+  ([vbox text analyzer]
+     (let [words (clucy/analyze text analyzer)]
+       (reduce vec/plus (map #(wcontext-vector vbox %) words)))))
 
 
 

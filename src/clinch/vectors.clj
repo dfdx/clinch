@@ -24,8 +24,8 @@
 (defn plus-2 [v1 v2]
   (loop [vec1 v1 vec2 v2 res (make-vector 'foo)]
     (cond 
-     (empty? vec1) (vec (concat res vec2))
-     (empty? vec2) (vec (concat res vec1))
+     (empty? vec1) (concat res vec2)
+     (empty? vec2) (concat res vec1)
      (< (cur-pos vec1) (cur-pos vec2)) (recur (rest vec1) vec2
 					      (conj res (first vec1)))
      (< (cur-pos vec2) (cur-pos vec1)) (recur vec1 (rest vec2)
@@ -36,10 +36,10 @@
 (def plus (reducable plus-2))
 
 (defn minus-sign [v]
-  (vec (map (fn [el] [(first el) (- (second el))]) v)))
+  (map (fn [el] [(first el) (- (second el))]) v))
 
 (defn minus [v1 v2]
-  (vec (filter #(not= (second %) 0) (plus v1 (minus-sign v2)))))
+  (filter #(not= (second %) 0) (plus v1 (minus-sign v2))))
 
 ;;(defn abs [arg] (if (>= arg 0) arg (- arg)))
 
