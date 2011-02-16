@@ -25,11 +25,17 @@
   ([path] (clucy/disk-index path))
   ([] (clucy/memory-index)))
 
-;; (defn add-document [index & maps]
-;;   (apply #(clucy/add index %) maps))
+(defnk make-bucket [vbox name text :analyzer (auto-analyzer text)]
+  (buckets/make-bucket vbox name text :analyzer analyzer))
 
-(defn make-vector-box [idx]
-  (ri/make-vector-box idx))
+;;(defn add-document [index & maps]
+;;  (apply #(clucy/add index %) maps))
+
+(defnk make-vector-box [idx :dim 5000 :seed 10]
+  (ri/make-vector-box idx :dim dim :seed seed))
+
+(defn update-vector-box! [vbox]
+  (ri/update! vbox))
 
 (defn make-bucket-row [idx vbox bucket-map analyzer]
   (map #(indexed-bucket idx vbox analyzer (first %) (second %)) bucket-map))
@@ -42,6 +48,10 @@
   (clf/find-best-in-row row vbox text))
 
 
-
 (defn auto-analyzer [text]
   (clucy/auto-analyzer text))
+
+(defn sim
+  ([vbox text1 text2] (ri/sim vbox text1 text2))
+  ([vbox text1 text2 analyzer] (ri/sim vbox text1 text2 analyzer)))
+

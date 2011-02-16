@@ -125,7 +125,7 @@
    their vectors, if any. Analyzer specifies language. If no analyzer is
    supplied, language detection is used. Takes O(W) time, where W -
    number of words in text. "
-  ([vbox text] (context-vector vbox text (clucy/auto-analyzer text)))
+  ([vbox text] (context-vector vbox text (clucy/auto-analyzer)))
   ([vbox text analyzer]
      (let [words (clucy/analyze text analyzer)]
        (reduce vec/plus (map #(wcontext-vector vbox %) words)))))
@@ -149,3 +149,12 @@
 	 (reduce rinto (map #(collect-parents % (- depth 1))
 			    @(:parents buck))))
    true #{}))
+
+
+
+(defn sim
+  ([vbox text1 text2] (sim vbox text1 text2 clucy/*analyzer*))
+  ([vbox text1 text2 analyzer]
+     (let [v1 (context-vector vbox text1 analyzer)
+	   v2 (context-vector vbox text2 analyzer)]
+       (vec/cosine v1 v2))))

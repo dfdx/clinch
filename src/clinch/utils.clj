@@ -1,6 +1,8 @@
 
 (ns clinch.utils
-  (:import java.io.File))
+  (:import java.io.File
+	   org.apache.lucene.analysis.snowball.SnowballAnalyzer
+	   org.apache.lucene.util.Version))
 
 
 (defn reducable [f]
@@ -35,4 +37,3 @@
 
 (defn assert-type [var t]
   (= (type var) t))
-
